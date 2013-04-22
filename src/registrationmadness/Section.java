@@ -16,6 +16,19 @@ public class Section {
         waitlist = new LinkedList<Student>();
     }
     
+    @Override
+    public String toString() {
+        return (morning == true) ? course + " Morning" : course + " Afternoon"; 
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Section)) return false;
+        if (obj == this) return true;
+        Section other = (Section)obj;
+        return (this.course == other.course && this.morning == other.morning) ? true : false;
+    }
+    
     synchronized public boolean inquire() {
         return (roster.size() < 25);
     }

@@ -30,8 +30,15 @@ public class Student implements Runnable {
         }
 //        while (rosteredSections.size() < 3) {
 //            register()
-//        }
-        
+//        }    
+    }
+    
+    public String desiredClasses() {
+        String classes = "";
+        for (int i = 0; i < desiredSections.size(); i++) {
+            classes = classes + desiredSections.get(i).toString() + " "; 
+        }
+        return classes;
     }
     
     boolean inquire(Section section) {
@@ -41,10 +48,12 @@ public class Student implements Runnable {
     synchronized boolean register(Section section) throws InterruptedException {
         if (section.register(this)) {
             rosteredSections.add(section);
+            System.out.println("Student " + id + " registered for " + section.toString());
             Thread.sleep(1000);
             return true;
         } else {
             waitlistedSections.add(section);
+            System.out.println("Student " + id + " waitlisted for " + section.toString());
             Thread.sleep(1000);
             return false;
         }
@@ -53,9 +62,11 @@ public class Student implements Runnable {
     void withdraw(Section section) throws InterruptedException {
         if (rosteredSections.contains(section)) {
             rosteredSections.remove(section);
+            System.out.println("Student " + id + " removed from " + section.toString());
             Thread.sleep(1000);
         } else if (waitlistedSections.contains(section)) {
             waitlistedSections.remove(section);
+            System.out.println("Student " + id + " removed from " + section.toString() + " waitlist");
             Thread.sleep(1000);
         }
         section.withdraw(this);
@@ -72,6 +83,7 @@ public class Student implements Runnable {
                         && !alternateSections.contains(rosteredSections.get(i))) {
                     rosteredSections.remove(i);
                     rosteredSections.add(section);
+                    System.out.println("Student " + id + " registered for " + section.toString() + " from waitlist");
                     Thread.sleep(1000);
                     return true;
                 }
