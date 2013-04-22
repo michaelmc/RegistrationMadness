@@ -7,30 +7,42 @@ public class Student implements Runnable {
     Vector<Section> desiredSections;
     Vector<Section> alternateSections;
     Vector<Section> rosteredSections;
+    Vector<Section> allSections;
     boolean prefersMornings;
     Vector<Section> waitlistedSections;
     
-    public Student(Vector<Section> desired, boolean mornings, int id) {
+    public Student(Vector<Section> desired, boolean mornings, int id, Vector<Section> allSections) {
         this.id = id;
         desiredSections = desired;
         // create alternate sections here
         prefersMornings = mornings;
         rosteredSections = new Vector<Section>(3);
         waitlistedSections = new Vector<Section>(50);
+        this.allSections = allSections;  
     }
     
     @Override
     public void run() {
         for (int i = 0; i < desiredSections.size(); i++) {
             try {
-                if (!register(desiredSections.get(i))) { register(alternateSections.get(i));}
+//                if (!register(desiredSections.get(i))) { register(alternateSections.get(i));}
+                register(desiredSections.get(i));
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                ;
             }
         }
-//        while (rosteredSections.size() < 3) {
-//            register()
-//        }    
+        while (rosteredSections.size() < 3) {
+            for (int i = 0; i < allSections.size(); i++) {
+                if (inquire(allSections.get(i))) {
+                    try {
+                        boolean in = register(allSections.get(i));
+                        if (!in) withdraw(allSections.get(i));
+                    } catch (InterruptedException e) {
+                        ;
+                    }
+                }
+            }
+        }    
     }
     
     public String desiredClasses() {
