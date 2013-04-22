@@ -1,7 +1,6 @@
 package registrationmadness;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -55,7 +54,7 @@ public class RegistrationMadness {
         ArrayList<Integer> checkedInts;
         Vector<Section> desiredCourses;
         // build for each student
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 190; i++) {
             morning = (rand.nextInt(10) > 5) ? false : true;
             checkedInts = new ArrayList<Integer>();
             desiredCourses = new Vector<Section>(3);
