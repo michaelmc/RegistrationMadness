@@ -15,6 +15,7 @@ public class RegistrationMadness {
     public static void main(String[] args) {
         RegistrationMadness registration = new RegistrationMadness();
         registration.register();
+        System.out.println(registration.students.get(32).rosteredSections);
         System.out.println("registration complete.");
     }
     
@@ -31,6 +32,7 @@ public class RegistrationMadness {
             pool.execute(students.get(i));
             System.out.println("Executing student " + students.get(i).id);
         }
+        pool.shutdown();
     }
     
     void generateSections() {
