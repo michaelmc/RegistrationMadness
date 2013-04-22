@@ -32,7 +32,7 @@ public class Section {
     
     synchronized public void withdraw(Student student) {
         int rosterIndex;
-        // Remove from waitlist first
+        // Remove from wait list first
         rosterIndex = waitlist.indexOf(student);
         if (rosterIndex > -1) { waitlist.remove(rosterIndex); }
         // Then remove from roster
@@ -43,7 +43,12 @@ public class Section {
                 boolean spotFilled = false;
                 while (spotFilled == false) {
                     Student nextStudent = waitlist.removeFirst();
-                    spotFilled = nextStudent.addFromWaitlist(this);
+                    try {
+                        spotFilled = nextStudent.addFromWaitlist(this);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     if (spotFilled == true) { roster.add(nextStudent); }
                 }
             }
