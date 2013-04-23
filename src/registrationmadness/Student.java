@@ -1,5 +1,6 @@
 package registrationmadness;
 
+import java.util.Random;
 import java.util.Vector;
 
 public class Student implements Runnable {
@@ -11,38 +12,43 @@ public class Student implements Runnable {
     boolean prefersMornings;
     Vector<Section> waitlistedSections;
     
-    public Student(Vector<Section> desired, boolean mornings, int id, Vector<Section> allSections) {
+    public Student(Vector<Section> desired, Vector<Section> alternate, boolean mornings, int id, Vector<Section> allSections) {
         this.id = id;
         desiredSections = desired;
-        // create alternate sections here
+        alternateSections = alternate;
         prefersMornings = mornings;
         rosteredSections = new Vector<Section>(3);
         waitlistedSections = new Vector<Section>(50);
-        this.allSections = allSections;  
+        this.allSections = allSections;
+        
     }
     
     @Override
     public void run() {
+        Random rand = new Random();
         for (int i = 0; i < desiredSections.size(); i++) {
             try {
-//                if (!register(desiredSections.get(i))) { register(alternateSections.get(i));}
-                register(desiredSections.get(i));
-            } catch (InterruptedException e) {
-                ;
-            }
-        }
-        while (rosteredSections.size() < 3) {
-            for (int i = 0; i < allSections.size(); i++) {
-                if (inquire(allSections.get(i))) {
-                    try {
-                        boolean in = register(allSections.get(i));
-                        if (!in) withdraw(allSections.get(i));
-                    } catch (InterruptedException e) {
-                        ;
+                if (!register(desiredSections.get(i))) { 
+                    if (register(alternateSections.get(i))) {
+                        withdraw(desiredSections.get(i)); 
                     }
                 }
+            } catch (InterruptedException e) { System.out.println("Register for wanted classes InterruptedException"); }
+        }
+        while (rosteredSections.size() < 3) {
+            int courseInt = rand.nextInt(24);
+//            if (!prefersMornings) { courseInt += 12; }
+            if (! rosteredSections.contains(allSections.get(courseInt))) {
+                try {
+                    register(allSections.get(courseInt));
+                } catch (InterruptedException e) {System.out.println("Register for other classes InterruptedException"); }
             }
-        }    
+        }
+        for (int i = 0; i < waitlistedSections.size(); i++) {
+            try {
+                withdraw(waitlistedSections.get(i));
+            } catch (InterruptedException e) { System.out.println("Remove from waitlists InterruptedException"); }
+        }
     }
     
     public String desiredClasses() {
@@ -53,19 +59,20 @@ public class Student implements Runnable {
         return classes;
     }
     
-    boolean inquire(Section section) {
+    boolean inquire(Section section) throws InterruptedException {
+        Thread.sleep(1000);
         return section.inquire();
     }
     
     synchronized boolean register(Section section) throws InterruptedException {
         if (section.register(this)) {
             rosteredSections.add(section);
-            System.out.println("Student " + id + " registered for " + section.toString());
+//            System.out.println("Student " + id + " registered for " + section.toString());
             Thread.sleep(1000);
             return true;
         } else {
             waitlistedSections.add(section);
-            System.out.println("Student " + id + " waitlisted for " + section.toString());
+//            System.out.println("Student " + id + " waitlisted for " + section.toString());
             Thread.sleep(1000);
             return false;
         }
@@ -74,11 +81,11 @@ public class Student implements Runnable {
     void withdraw(Section section) throws InterruptedException {
         if (rosteredSections.contains(section)) {
             rosteredSections.remove(section);
-            System.out.println("Student " + id + " removed from " + section.toString());
+//            System.out.println("Student " + id + " removed from " + section.toString());
             Thread.sleep(1000);
         } else if (waitlistedSections.contains(section)) {
             waitlistedSections.remove(section);
-            System.out.println("Student " + id + " removed from " + section.toString() + " waitlist");
+//            System.out.println("Student " + id + " removed from " + section.toString() + " waitlist");
             Thread.sleep(1000);
         }
         section.withdraw(this);
@@ -87,6 +94,7 @@ public class Student implements Runnable {
     synchronized boolean addFromWaitlist(Section section) throws InterruptedException {
         if (rosteredSections.size() < 3) {
             rosteredSections.add(section);
+            waitlistedSections.remove(section);
             Thread.sleep(1000);
             return true;
         } else {
@@ -95,7 +103,7 @@ public class Student implements Runnable {
                         && !alternateSections.contains(rosteredSections.get(i))) {
                     rosteredSections.remove(i);
                     rosteredSections.add(section);
-                    System.out.println("Student " + id + " registered for " + section.toString() + " from waitlist");
+//                    System.out.println("Student " + id + " registered for " + section.toString() + " from waitlist");
                     Thread.sleep(1000);
                     return true;
                 }
