@@ -37,9 +37,9 @@ public class Student implements Runnable {
                 e.printStackTrace();
             }
         }
+        int courseInt;
         while (rosteredSections.size() < 3) {
-            int courseInt = rand.nextInt(24);
-//            if (!prefersMornings) { courseInt += 12; }
+            courseInt = rand.nextInt(24);
             if (! rosteredSections.contains(allSections.get(courseInt))) {
                 try {
                     register(allSections.get(courseInt));
