@@ -33,7 +33,9 @@ public class Student implements Runnable {
                         withdraw(desiredSections.get(i)); 
                     }
                 }
-            } catch (InterruptedException e) { System.out.println("Register for wanted classes InterruptedException"); }
+            } catch (InterruptedException e) { 
+                e.printStackTrace();
+            }
         }
         while (rosteredSections.size() < 3) {
             int courseInt = rand.nextInt(24);
@@ -41,13 +43,17 @@ public class Student implements Runnable {
             if (! rosteredSections.contains(allSections.get(courseInt))) {
                 try {
                     register(allSections.get(courseInt));
-                } catch (InterruptedException e) {System.out.println("Register for other classes InterruptedException"); }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         for (int i = 0; i < waitlistedSections.size(); i++) {
             try {
                 withdraw(waitlistedSections.get(i));
-            } catch (InterruptedException e) { System.out.println("Remove from waitlists InterruptedException"); }
+            } catch (InterruptedException e) { 
+                e.printStackTrace();
+            }
         }
     }
     

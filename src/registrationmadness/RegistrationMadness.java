@@ -30,9 +30,9 @@ public class RegistrationMadness {
     
     void register() {
         startTime = System.nanoTime();
-        int threads = Runtime.getRuntime().availableProcessors();
+//        int threads = Runtime.getRuntime().availableProcessors();
 //        threads = (threads < 1) ? 1 : threads;
-        threads = 190;
+        int threads = 190;
         ExecutorService pool = Executors.newFixedThreadPool(threads);
         for (int i = 0; i < students.size(); i++) {
 //            System.out.println(students.get(i).desiredClasses());
@@ -42,8 +42,10 @@ public class RegistrationMadness {
         pool.shutdown();
 //        pool.shutdownNow();
         try {
-            pool.awaitTermination(60, TimeUnit.SECONDS);
-        } catch (InterruptedException e) { System.out.println("AwaitTermination InterruptedException"); }
+            pool.awaitTermination(60, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         int sum = 0;
         for (int i = 0; i < sections.size(); i++) {
             if (sections.get(i).roster.size() > 25) { System.out.println("More than 25!"); }
@@ -67,7 +69,7 @@ public class RegistrationMadness {
         for (int i = 101; i < 113; i++) {
             sections.add(new Section(i, false));
         }
-        System.out.println("Sections: " + sections.size());
+//        System.out.println("Sections: " + sections.size());
     }
     
     void generateStudents() {
@@ -98,7 +100,7 @@ public class RegistrationMadness {
             }
 
         }
-        System.out.println("Students: " + students.size());
+//        System.out.println("Students: " + students.size());
     }
     
     void statistics() {
@@ -128,15 +130,15 @@ public class RegistrationMadness {
                         rightTimeFrame += 1;
                     }
                 }
-                System.out.print(student.rosteredSections.get(j).toString() + "\t");
+//                System.out.print(student.rosteredSections.get(j).toString() + "\t");
             }   
-            for (int j = 0; j < student.desiredSections.size(); j++) {
-                if (j == student.desiredSections.size() - 1) {
-                    System.out.print(student.desiredSections.get(j).toString() + "\n");
-                } else {
-                    System.out.print(student.desiredSections.get(j).toString() + "\t");
-                }
-            }
+//            for (int j = 0; j < student.desiredSections.size(); j++) {
+//                if (j == student.desiredSections.size() - 1) {
+//                    System.out.print(student.desiredSections.get(j).toString() + "\n");
+//                } else {
+//                    System.out.print(student.desiredSections.get(j).toString() + "\t");
+//                }
+//            }
             if (perfectSections == 3) { perfectSchedules += 1; }
             if (rightSections == 3) { gotAllClasses += 1; }
             if (rightSections == 2) { gotTwoClasses += 1; }
