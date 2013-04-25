@@ -7,6 +7,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A class to run a student registration simulation. 190 students at the same
+ * time attempt to register for their randomly-selected desired courses and
+ * sections, three courses per student.
+ * 
+ * @author Michael McLaughlin, mvm@isc.upenn.edu
+ * @version Spring 2013
+ */
 public class RegistrationMadness {
     Vector<Section> sections = new Vector<Section>(24);
     Vector<Student> students = new Vector<Student>(190);
@@ -14,6 +22,9 @@ public class RegistrationMadness {
     long endTime;
 
     /**
+     * The registration simulation's main class. Runs the actual student
+     * registration simulation.
+     * 
      * @param args
      */
     public static void main(String[] args) {
@@ -23,45 +34,48 @@ public class RegistrationMadness {
         registration.statistics();
     }
     
+    /**
+     * Constructor for the RegistrationMadness class. Generates the course
+     * sections and students for the simulation.
+     */
     public RegistrationMadness() {
         generateSections();
         generateStudents();
     }
     
+    /**
+     * Runs the details of the simulation. Times the process, creates the 
+     * process pool, and calls the student runnables. In addition, will display
+     * messages if a course registers more than 25 students and if a student 
+     * doesn't register for three courses. Finally prints the elapsed time. 
+     */
     void register() {
         startTime = System.nanoTime();
-//        int threads = Runtime.getRuntime().availableProcessors();
-//        threads = (threads < 1) ? 1 : threads;
         int threads = 190;
         ExecutorService pool = Executors.newFixedThreadPool(threads);
         for (int i = 0; i < students.size(); i++) {
-//            System.out.println(students.get(i).desiredClasses());
             pool.execute(students.get(i));
-//            System.out.println("Executing student " + students.get(i).id);
         }
         pool.shutdown();
-//        pool.shutdownNow();
         try {
             pool.awaitTermination(60, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        int sum = 0;
         for (int i = 0; i < sections.size(); i++) {
             if (sections.get(i).roster.size() > 25) { System.out.println("More than 25!"); }
-            sum += sections.get(i).roster.size();
         }
-//        System.out.println("Total section registrations: " + sum);
-        sum = 0;
         for (int i = 0; i < students.size(); i++) {
             if (students.get(i).rosteredSections.size() != 3) { System.out.println("Not 3 classes!"); }
-            sum += students.get(i).rosteredSections.size();
         }
-//        System.out.println("Total registered classes: " + sum);
         endTime = System.nanoTime();
         System.out.println("Time: " + ((endTime - startTime) / 1e9) + " seconds.\n");
     }
     
+    /**
+     * Creates the sections for the simulation. Generates twelve morning
+     * sections and twelve afternoon sections, each series numbered 101-112. 
+     */
     void generateSections() {
         for (int i = 101; i < 113; i++) {
             sections.add(new Section(i, true));
@@ -69,9 +83,13 @@ public class RegistrationMadness {
         for (int i = 101; i < 113; i++) {
             sections.add(new Section(i, false));
         }
-//        System.out.println("Sections: " + sections.size());
     }
     
+    /**
+     * Creates the students for the simulation. Generates 190 students each
+     * with a randomly selected course time preference (60% probability of 
+     * preferring the morning) and three randomly generated desired sections. 
+     */
     void generateStudents() {
         Random rand = new Random(); 
         boolean morning;
@@ -79,7 +97,7 @@ public class RegistrationMadness {
         ArrayList<Integer> checkedInts;
         Vector<Section> desiredCourses;
         Vector<Section> alternateCourses;
-        // build for each student
+        // build each student
         for (int i = 1; i <= 190; i++) {
             morning = (rand.nextInt(10) > 5) ? false : true;
             checkedInts = new ArrayList<Integer>();
@@ -98,18 +116,30 @@ public class RegistrationMadness {
             } else {
                 students.add(new Student(alternateCourses, desiredCourses, morning, i, sections));
             }
-
         }
-//        System.out.println("Students: " + students.size());
     }
     
+    /**
+     * Generates a set of statistics for student enrollment once the
+     * simulation completes. These include number of students with:
+     * 
+     * -Perfect schedules (all desired classes at the desired times)
+     * -All three desired courses, regardless of time
+     * -Two of three desired courses, regardless of time
+     * -One of three desired courses, regardless of time
+     * -All three courses at the preferred time
+     * -No perfect courses
+     * -No desired courses, regardless of time
+     * -Worst possible schedules (no wanted classes, unwanted times)
+     * 
+     */
     void statistics() {
-        int perfectSchedules = 0; //
-        int gotAllClasses = 0; //
-        int gotTwoClasses = 0; //
+        int perfectSchedules = 0;
+        int gotAllClasses = 0;
+        int gotTwoClasses = 0;
         int gotOneClass = 0;
         int gotAllTimeframe = 0;
-        int gotNoPerfectSections = 0; //
+        int gotNoPerfectSections = 0;
         int gotNoWantedClasses = 0;
         int terribleSchedules = 0;
         
@@ -130,15 +160,7 @@ public class RegistrationMadness {
                         rightTimeFrame += 1;
                     }
                 }
-//                System.out.print(student.rosteredSections.get(j).toString() + "\t");
             }   
-//            for (int j = 0; j < student.desiredSections.size(); j++) {
-//                if (j == student.desiredSections.size() - 1) {
-//                    System.out.print(student.desiredSections.get(j).toString() + "\n");
-//                } else {
-//                    System.out.print(student.desiredSections.get(j).toString() + "\t");
-//                }
-//            }
             if (perfectSections == 3) { perfectSchedules += 1; }
             if (rightSections == 3) { gotAllClasses += 1; }
             if (rightSections == 2) { gotTwoClasses += 1; }

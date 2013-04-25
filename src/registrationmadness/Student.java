@@ -3,6 +3,20 @@ package registrationmadness;
 import java.util.Random;
 import java.util.Vector;
 
+/**
+ * A class to represent students in the registration simulation. Each student
+ * has an ID number, desired sections, alternate sections (the same courses as
+ * desired but in opposite times), preferred time (morning or afternoon), a
+ * course catalog, a list of rostered sections, and a list of waitlisted 
+ * sections.
+ * 
+ * The student also has the ability to find out if a class has open space,
+ * register for a class, and withdraw from a class, as well as register for a
+ * class from the waitlist.
+ * 
+ * @author Michael McLaughlin, mvm@cis.upenn.edu
+ * @version Spring 2013
+ */
 public class Student implements Runnable {
     int id;
     Vector<Section> desiredSections;
@@ -12,6 +26,16 @@ public class Student implements Runnable {
     boolean prefersMornings;
     Vector<Section> waitlistedSections;
     
+    /**
+     * Constructor for the student class. Passes to the student the below
+     * parameters:
+     * 
+     * @param desired The student's desired sections.
+     * @param alternate The student's alternate sections.
+     * @param mornings The student's preferred section time.
+     * @param id The student's ID number.
+     * @param allSections The course catalog of all sections.
+     */
     public Student(Vector<Section> desired, Vector<Section> alternate, boolean mornings, int id, Vector<Section> allSections) {
         this.id = id;
         desiredSections = desired;
@@ -23,6 +47,9 @@ public class Student implements Runnable {
         
     }
     
+    /**
+     * Runs the student's // TODO start here.
+     */
     @Override
     public void run() {
         Random rand = new Random();
