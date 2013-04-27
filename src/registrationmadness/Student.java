@@ -48,7 +48,10 @@ public class Student implements Runnable {
     }
     
     /**
-     * Runs the student's // TODO start here.
+     * Runs the student's section registration algorithm. Attempts to register
+     * the student in desired courses and then alternate courses, and then
+     * for any available section. Once the student has all three courses, they
+     * withdraw from any extant waitlits.
      */
     @Override
     public void run() {
@@ -84,6 +87,11 @@ public class Student implements Runnable {
         }
     }
     
+    /**
+     * Returns the list of the student's desired sections.
+     * 
+     * @return The list of the student's desired sections.
+     */
     public String desiredClasses() {
         String classes = "";
         for (int i = 0; i < desiredSections.size(); i++) {
@@ -92,38 +100,64 @@ public class Student implements Runnable {
         return classes;
     }
     
+    /**
+     * Asks a section whether it has room left to register. 
+     * 
+     * @param section The section to ask.
+     * @return True if the section is not full.
+     * @throws InterruptedException If the thread is interrupted.
+     */
     boolean inquire(Section section) throws InterruptedException {
         Thread.sleep(1000);
         return section.inquire();
     }
     
+    /**
+     * Attempts to register the student in a section.
+     *  
+     * @param section The section in which to register the student.
+     * @return True if the student is registered, false if he is waitlisted.
+     * @throws InterruptedException If the thread is interrupted.
+     */
     synchronized boolean register(Section section) throws InterruptedException {
         if (section.register(this)) {
             rosteredSections.add(section);
-//            System.out.println("Student " + id + " registered for " + section.toString());
             Thread.sleep(1000);
             return true;
         } else {
             waitlistedSections.add(section);
-//            System.out.println("Student " + id + " waitlisted for " + section.toString());
             Thread.sleep(1000);
             return false;
         }
     }
     
+    /**
+     * Withdraws the student from the roster or waitlist of a section.
+     * 
+     * @param section The section from which to withdraw the student.
+     * @throws InterruptedException If the thread is interrupted.
+     */
     void withdraw(Section section) throws InterruptedException {
         if (rosteredSections.contains(section)) {
             rosteredSections.remove(section);
-//            System.out.println("Student " + id + " removed from " + section.toString());
             Thread.sleep(1000);
         } else if (waitlistedSections.contains(section)) {
             waitlistedSections.remove(section);
-//            System.out.println("Student " + id + " removed from " + section.toString() + " waitlist");
             Thread.sleep(1000);
         }
         section.withdraw(this);
     }
     
+    /**
+     * Attempts to register the student for a section from its waitlist. If the
+     * student doesn't yet have three courses, he is automatically registered. 
+     * If he does, then he's registered if and only if one of his previously
+     * registered sections is neither desired nor alternate.
+     * 
+     * @param section The section in which to enroll the student.
+     * @return True if the student is registered for the section.
+     * @throws InterruptedException If the thread is interrupted.
+     */
     synchronized boolean addFromWaitlist(Section section) throws InterruptedException {
         if (rosteredSections.size() < 3) {
             rosteredSections.add(section);
@@ -136,7 +170,6 @@ public class Student implements Runnable {
                         && !alternateSections.contains(rosteredSections.get(i))) {
                     rosteredSections.remove(i);
                     rosteredSections.add(section);
-//                    System.out.println("Student " + id + " registered for " + section.toString() + " from waitlist");
                     Thread.sleep(1000);
                     return true;
                 }
