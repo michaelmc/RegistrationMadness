@@ -78,8 +78,16 @@ public class StudentTest {
     }
 
     @Test
-    public final void testAddFromWaitlist() {
-        fail("Not yet implemented");
+    public final void testAddFromWaitlist() throws InterruptedException {
+        sections.get(2).roster.setSize(25);
+        assertFalse(students.get(0).register(sections.get(2)));
+        assertEquals(0, students.get(0).rosteredSections.size());
+        assertEquals(1, students.get(0).waitlistedSections.size());
+        assertEquals(0, students.get(0).rosteredSections.size());
+        sections.get(2).withdraw(null);
+        assertEquals(25, sections.get(2).roster.size());
+        assertEquals(0, students.get(0).waitlistedSections.size());
+        assertEquals(1, students.get(0).rosteredSections.size());
     }
 
 }
