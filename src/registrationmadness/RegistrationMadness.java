@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * time attempt to register for their randomly-selected desired courses and
  * sections, three courses per student.
  * 
- * @author Michael McLaughlin, mvm@isc.upenn.edu
+ * @author Michael McLaughlin, mvm@cis.upenn.edu
  * @version Spring 2013
  */
 public class RegistrationMadness {
