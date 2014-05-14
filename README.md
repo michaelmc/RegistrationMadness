@@ -1,4 +1,4 @@
 RegistrationMadness
 ===================
 
-Assignment 9
+Concurrency demo for Penn CIT594.
